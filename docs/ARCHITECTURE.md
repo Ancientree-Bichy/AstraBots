@@ -1,6 +1,21 @@
 # How the agent controls the robot
 
-## Three control layers
+## Two interfaces, not one shared observation contract
+
+The **known-map pilot** gives Astra a global height map and true pose. Astra
+submits world XY waypoints; PurePursuit converts them to body velocity before
+the fixed locomotion policy executes them. Each submission advances at most 2 s.
+Geometry queries evaluate the proposed route without searching for one. The same
+Codex conversation retains development and cross-episode experience. See the
+[known-map method and demonstrations](KNOWN_MAP.md).
+
+The **RGB-D experiments** withhold the map and true pose. Astra directly chooses
+body velocities from the current camera/proprioceptive inputs and ideal goal
+guidance. Each episode has its own isolated model thread. The rest of this page
+describes this RGB-D interface; its restrictions must not be attributed to the
+earlier known-map pilot.
+
+## RGB-D: three control layers
 
 | Component | Responsibility | Update rate |
 | --- | --- | --- |
@@ -12,7 +27,7 @@ The simulator pauses while Astra thinks. The current velocity command is held
 during its execution interval; the locomotion policy continues responding to
 proprioception. Astra does not receive new frames midway through that interval.
 
-## Observation boundary
+## RGB-D observation boundary
 
 The head camera is fixed to `base_link`, at `[0.32, 0, 0.10]` m, facing forward
 and down 15°. It moves with body roll and pitch. RGB-D is 320 × 240 with a 70°
@@ -31,7 +46,7 @@ scene filename, reference route or observer-camera image. No SLAM, odometry or
 multi-frame geometry fusion is implemented. Episode history persists; no history
 from another trial is supplied.
 
-## Navigation tools
+## RGB-D navigation tools
 
 | Tool | Behavior |
 | --- | --- |
@@ -50,7 +65,7 @@ The video's `note` is a brief model-authored explanation. Numeric action fields
 drive the robot. A note is not a complete reasoning trace or proof of the
 correctness of the underlying perception.
 
-## Isolation and evaluation
+## RGB-D isolation and evaluation
 
 Each episode uses a fresh `gpt-6-astra / medium` App Server thread in a restricted
 filesystem/process namespace. Source assets, maps, evaluation logs and other
