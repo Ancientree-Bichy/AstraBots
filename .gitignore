@@ -1,0 +1,26 @@
+# Public repository: selected presentation material only.
+/*
+!/.gitignore
+!/README.md
+!/README.zh-CN.md
+!/LICENSE.md
+!/THIRD_PARTY.md
+!/docs/
+!/assets/
+
+# Keep experiments, scripts, data, credentials and build products local.
+.local/
+**/__pycache__/
+**/.cache/
+*.py
+*.sh
+*.npz
+*.jsonl
+*.csv
+*.tar
+*.tar.gz
+*.zip
+.env*
+auth.json
+*.pem
+*.key
